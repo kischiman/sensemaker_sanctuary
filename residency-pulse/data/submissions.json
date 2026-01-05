@@ -1,0 +1,60 @@
+[
+  {
+    "id": "1767620811919",
+    "name": "Andrej",
+    "date": "2026-01-05T20:22",
+    "narrative": "I understood how embedded AI can be useful in physical products, like kitchen appliances. This made me re-visit my long term plans because I can use the small experiments to learn about how to build larger environments.",
+    "valueTriad": {
+      "x": 91,
+      "y": 149
+    },
+    "identityTriad": {
+      "x": 136,
+      "y": 100
+    },
+    "universityStartupSlider": 32,
+    "timestamp": "2026-01-05T13:46:50.469Z",
+    "analysis": {
+      "values": {
+        "sustainability": 34,
+        "intellectualGrowth": 64,
+        "community": 2
+      },
+      "identity": {
+        "sanctuary": 64,
+        "laboratory": 26,
+        "guild": 11
+      },
+      "academicVentureBalance": 32
+    }
+  },
+  {
+    "id": "1767624584994",
+    "name": "Andrej",
+    "date": "2026-01-05T21:48",
+    "narrative": "Nothing new",
+    "valueTriad": {
+      "x": 277,
+      "y": 150.5
+    },
+    "identityTriad": {
+      "x": 341,
+      "y": 284.5
+    },
+    "universityStartupSlider": 34,
+    "timestamp": "2026-01-05T14:49:44.958Z",
+    "analysis": {
+      "values": {
+        "container": 78,
+        "network": 1,
+        "launchpad": 22
+      },
+      "identity": {
+        "sanctuary": 18,
+        "laboratory": 6,
+        "guild": 76
+      },
+      "academicVentureBalance": 34
+    }
+  }
+]
