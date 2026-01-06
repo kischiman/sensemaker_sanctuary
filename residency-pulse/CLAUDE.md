@@ -37,7 +37,7 @@ npm run lint         # Run ESLint
 - Tabular view of all submissions with interpreted values
 
 ### Admin Dashboard
-- `/admin/dashboard` route with environment variable password protection
+- `/admin/dashboard` route with hardcoded password protection (password: "residency2024")
 - **Heatmap Visualizations**: SVG-based scatter plots showing submission distribution on both triads
 - **Timeline Analysis**: University vs. Startup trend line showing progression over time
 - **Enhanced CSV Export**: Includes X/Y coordinates, barycentric percentages, UTF-8 encoding

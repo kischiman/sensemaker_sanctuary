@@ -26,6 +26,8 @@ interface Submission {
   };
 }
 
+const ADMIN_PASSWORD = 'residency2024'; // Simple password protection
+
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -33,23 +35,13 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await fetch('/api/admin/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-      });
-      
-      if (response.ok) {
-        setIsAuthenticated(true);
-        loadSubmissions();
-      } else {
-        setError('Invalid password');
-      }
-    } catch {
-      setError('Authentication failed');
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      loadSubmissions();
+    } else {
+      setError('Invalid password');
     }
   };
 
@@ -315,7 +307,7 @@ export default function AdminDashboard() {
             ))}
 
             {/* Vertical grid lines for dates */}
-            {dailyAverages.map((day, index) => {
+            {dailyAverages.map((_, index) => {
               const x = margin.left + (index / Math.max(1, dailyAverages.length - 1)) * (width - margin.left - margin.right);
               return (
                 <line
@@ -431,7 +423,7 @@ export default function AdminDashboard() {
           <form onSubmit={handleAuth} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Environment Password
+                Password
               </label>
               <input
                 type="password"
