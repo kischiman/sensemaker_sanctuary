@@ -81,9 +81,6 @@ export function ResidencyForm() {
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
           Residency Pulse
         </h1>
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-          Capture the micro-narratives of your research journey. Balance your values, identity, and academic-venture orientation.
-        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-12">
@@ -131,7 +128,7 @@ export function ResidencyForm() {
         {/* Micro-narrative */}
         <div className="space-y-4">
           <label className="block text-xl font-semibold text-gray-200">
-            Share a specific moment or observation from today that defined your experience.
+            A friend asks you what the Sanctuary is like. What story - positive or negative - do you tell them? You can change any identifying details.
           </label>
           <textarea
             value={formData.narrative}
