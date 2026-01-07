@@ -86,28 +86,19 @@ export function ResidencyForm() {
       <form onSubmit={handleSubmit} className="space-y-12">
         {/* Name and Date Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Name Dropdown */}
+          {/* Name Field */}
           <div className="space-y-2">
             <label className="block text-lg font-semibold text-gray-200">
               Your Name
             </label>
-            <select
+            <input
+              type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              placeholder="Enter your name"
               required
-            >
-              <option value="" disabled>Select your name</option>
-              <option value="Anna">Anna</option>
-              <option value="Andrej">Andrej</option>
-              <option value="Justina">Justina</option>
-              <option value="Matt">Matt</option>
-              <option value="Anastasia">Anastasia</option>
-              <option value="Kirill">Kirill</option>
-              <option value="Jordi">Jordi</option>
-              <option value="Stacey">Stacey</option>
-              <option value="Jane">Jane</option>
-            </select>
+            />
           </div>
 
           {/* Date and Time Selector */}
