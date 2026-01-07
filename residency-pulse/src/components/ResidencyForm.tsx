@@ -132,12 +132,9 @@ export function ResidencyForm() {
 
         {/* Value Engine Triad */}
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-200 text-center">
-            The Value Engine
-          </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto">
+          <label className="block text-xl font-semibold text-gray-200 text-center">
             Looking back at your most productive or meaningful moment today, what made it possible?
-          </p>
+          </label>
           
           {/* Explanations */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-400 max-w-4xl mx-auto">
@@ -169,12 +166,9 @@ export function ResidencyForm() {
 
         {/* Identity Map Triad */}
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-200 text-center">
-            The Identity Map
-          </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto">
+          <label className="block text-xl font-semibold text-gray-200 text-center">
             If you were describing the &lsquo;vibe&rsquo; of this week to a close friend, which of these sounds most like your experience?
-          </p>
+          </label>
           
           {/* Explanations */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-400 max-w-4xl mx-auto">
@@ -206,12 +200,9 @@ export function ResidencyForm() {
 
         {/* University/Startup Slider */}
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-200 text-center">
-            Academic-Venture Spectrum
-          </h2>
-          <p className="text-gray-400 text-center">
+          <label className="block text-xl font-semibold text-gray-200 text-center">
             Where did your focus lean today?
-          </p>
+          </label>
           <div className="flex justify-center">
             <Slider
               leftLabel="University / Academic"
