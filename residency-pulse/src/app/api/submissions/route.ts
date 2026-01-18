@@ -1,13 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@vercel/kv';
 
-// Initialize Redis client only if REDIS_URL is available
+// Initialize Redis client only if Vercel KV environment variables are properly set
 let kv: ReturnType<typeof createClient> | null = null;
-if (process.env.REDIS_URL) {
-  kv = createClient({
-    url: process.env.REDIS_URL,
-    token: '' // Empty token when using Redis URL with integrated auth
-  });
+const kvUrl = process.env.KV_REST_API_URL;
+const kvToken = process.env.KV_REST_API_TOKEN;
+
+if (kvUrl && kvToken && kvUrl.trim() !== '' && kvToken.trim() !== '') {
+  // Validate URL format
+  if (kvUrl.startsWith('https://')) {
+    try {
+      kv = createClient({
+        url: kvUrl,
+        token: kvToken
+      });
+    } catch (error) {
+      console.error('Failed to initialize KV client:', error);
+    }
+  } else {
+    console.warn('KV_REST_API_URL must start with https://');
+  }
 }
 
 // In-memory fallback for local development
