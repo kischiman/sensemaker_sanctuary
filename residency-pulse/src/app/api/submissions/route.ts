@@ -152,11 +152,35 @@ export async function GET() {
       // Get all submissions from Redis list
       const submissionsData = await kv.lrange('residency_stories', 0, -1);
       
-      // Parse JSON strings back to objects
-      submissions = submissionsData.map((item: string) => JSON.parse(item));
-      
-      // Since lpush adds to the beginning, reverse to get chronological order
-      submissions.reverse();
+      // Handle case where list might be empty, null, or undefined
+      if (submissionsData != null && Array.isArray(submissionsData)) {
+        if (submissionsData.length > 0) {
+          // Parse JSON strings back to objects, filtering out any invalid entries
+          submissions = submissionsData
+            .map((item: unknown) => {
+              try {
+                if (typeof item === 'string') {
+                  return JSON.parse(item);
+                }
+                // If item is already an object, return it directly
+                if (typeof item === 'object' && item !== null) {
+                  return item;
+                }
+                return null;
+              } catch (parseError) {
+                console.warn('Failed to parse submission item:', parseError, 'Item:', item);
+                return null;
+              }
+            })
+            .filter((item): item is SubmissionWithAnalysis => item !== null);
+        
+          // Since lpush adds to the beginning, reverse to get chronological order
+          submissions.reverse();
+        }
+        // If submissionsData is an empty array, submissions remains empty array (correct behavior)
+      } else {
+        console.warn('Unexpected submissionsData format:', typeof submissionsData, submissionsData);
+      }
     } else {
       // Use in-memory storage for local development
       submissions = [...memoryStore].reverse(); // reverse to get chronological order
@@ -166,7 +190,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error reading submissions:', error);
     return NextResponse.json(
-      { error: 'Failed to read submissions' },
+      { error: 'Failed to read submissions', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
