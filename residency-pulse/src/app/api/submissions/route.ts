@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from '@vercel/kv';
+
+const kv = createClient({
+  url: process.env.REDIS_URL!,
+  token: process.env.KV_REST_API_TOKEN!
+});
 
 interface Submission {
   id: string;
@@ -11,7 +16,6 @@ interface Submission {
   universityStartupSlider: number;
   timestamp: string;
 }
-
 
 // Calculate barycentric coordinates for triads
 function getBarycentricCoords(x: number, y: number) {
@@ -83,7 +87,7 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Push new submission to Redis list
+    // Store submission in Redis using lpush to maintain order
     await kv.lpush('residency_stories', JSON.stringify(submissionWithAnalysis));
 
     return NextResponse.json({ 
