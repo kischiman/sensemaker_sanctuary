@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const SUBMISSIONS_FILE = path.join(DATA_DIR, 'submissions.json');
+import { kv } from '@vercel/kv';
 
 interface Submission {
   id: string;
@@ -16,13 +12,6 @@ interface Submission {
   timestamp: string;
 }
 
-// Ensure data directory and file exist
-async function ensureDataFile() {
-  await fs.ensureDir(DATA_DIR);
-  if (!(await fs.pathExists(SUBMISSIONS_FILE))) {
-    await fs.writeJson(SUBMISSIONS_FILE, []);
-  }
-}
 
 // Calculate barycentric coordinates for triads
 function getBarycentricCoords(x: number, y: number) {
@@ -50,8 +39,6 @@ function getBarycentricCoords(x: number, y: number) {
 
 export async function POST(request: NextRequest) {
   try {
-    await ensureDataFile();
-    
     const body = await request.json();
     const { name, date, narrative, valueTriad, identityTriad, universityStartupSlider, timestamp } = body;
 
@@ -96,14 +83,8 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Read existing submissions
-    const submissions = await fs.readJson(SUBMISSIONS_FILE);
-    
-    // Add new submission
-    submissions.push(submissionWithAnalysis);
-    
-    // Write back to file
-    await fs.writeJson(SUBMISSIONS_FILE, submissions, { spaces: 2 });
+    // Push new submission to Redis list
+    await kv.lpush('residency_stories', JSON.stringify(submissionWithAnalysis));
 
     return NextResponse.json({ 
       message: 'Submission saved successfully',
@@ -121,8 +102,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    await ensureDataFile();
-    const submissions = await fs.readJson(SUBMISSIONS_FILE);
+    // Get all submissions from Redis list
+    const submissionsData = await kv.lrange('residency_stories', 0, -1);
+    
+    // Parse JSON strings back to objects
+    const submissions = submissionsData.map(item => JSON.parse(item as string));
+    
+    // Since lpush adds to the beginning, reverse to get chronological order
+    submissions.reverse();
+    
     return NextResponse.json(submissions);
   } catch (error) {
     console.error('Error reading submissions:', error);
