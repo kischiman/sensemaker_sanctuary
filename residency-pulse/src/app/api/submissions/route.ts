@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@vercel/kv';
 
-const kv = createClient({
-  url: process.env.REDIS_URL!,
-  token: '' // Empty token when using Redis URL with integrated auth
-});
+// Initialize Redis client only if REDIS_URL is available
+let kv: ReturnType<typeof createClient> | null = null;
+if (process.env.REDIS_URL) {
+  kv = createClient({
+    url: process.env.REDIS_URL,
+    token: '' // Empty token when using Redis URL with integrated auth
+  });
+}
+
+// In-memory fallback for local development
+const memoryStore: SubmissionWithAnalysis[] = [];
 
 interface Submission {
   id: string;
@@ -15,6 +22,22 @@ interface Submission {
   identityTriad: { x: number; y: number };
   universityStartupSlider: number;
   timestamp: string;
+}
+
+interface SubmissionWithAnalysis extends Submission {
+  analysis: {
+    values: {
+      container: number;
+      network: number;
+      launchpad: number;
+    };
+    identity: {
+      sanctuary: number;
+      laboratory: number;
+      guild: number;
+    };
+    academicVentureBalance: number;
+  };
 }
 
 // Calculate barycentric coordinates for triads
@@ -87,8 +110,13 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Store submission in Redis using lpush to maintain order
-    await kv.lpush('residency_stories', JSON.stringify(submissionWithAnalysis));
+    // Store submission in Redis or memory depending on environment
+    if (kv) {
+      await kv.lpush('residency_stories', JSON.stringify(submissionWithAnalysis));
+    } else {
+      // Fallback to in-memory storage for local development
+      memoryStore.unshift(submissionWithAnalysis); // unshift to mimic lpush behavior
+    }
 
     return NextResponse.json({ 
       message: 'Submission saved successfully',
@@ -106,14 +134,21 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    // Get all submissions from Redis list
-    const submissionsData = await kv.lrange('residency_stories', 0, -1);
+    let submissions: SubmissionWithAnalysis[] = [];
     
-    // Parse JSON strings back to objects
-    const submissions = submissionsData.map(item => JSON.parse(item as string));
-    
-    // Since lpush adds to the beginning, reverse to get chronological order
-    submissions.reverse();
+    if (kv) {
+      // Get all submissions from Redis list
+      const submissionsData = await kv.lrange('residency_stories', 0, -1);
+      
+      // Parse JSON strings back to objects
+      submissions = submissionsData.map((item: string) => JSON.parse(item));
+      
+      // Since lpush adds to the beginning, reverse to get chronological order
+      submissions.reverse();
+    } else {
+      // Use in-memory storage for local development
+      submissions = [...memoryStore].reverse(); // reverse to get chronological order
+    }
     
     return NextResponse.json(submissions);
   } catch (error) {
