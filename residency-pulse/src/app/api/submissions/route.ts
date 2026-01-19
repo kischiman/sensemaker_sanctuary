@@ -195,3 +195,72 @@ export async function GET() {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Submission ID is required' },
+        { status: 400 }
+      );
+    }
+
+    if (kv) {
+      // Get all submissions from Redis list
+      const submissionsData = await kv.lrange('residency_stories', 0, -1);
+      
+      if (submissionsData != null && Array.isArray(submissionsData)) {
+        // Parse and filter out the submission with the matching ID
+        const filteredSubmissions = submissionsData
+          .map((item: unknown) => {
+            try {
+              if (typeof item === 'string') {
+                return JSON.parse(item);
+              }
+              if (typeof item === 'object' && item !== null) {
+                return item;
+              }
+              return null;
+            } catch (parseError) {
+              console.warn('Failed to parse submission item:', parseError, 'Item:', item);
+              return null;
+            }
+          })
+          .filter((item): item is SubmissionWithAnalysis => 
+            item !== null && item.id !== id
+          );
+
+        // Clear the list and repopulate with filtered submissions
+        await kv.del('residency_stories');
+        
+        if (filteredSubmissions.length > 0) {
+          // Since lpush adds in reverse order, we need to push in reverse
+          for (const submission of filteredSubmissions.reverse()) {
+            await kv.lpush('residency_stories', JSON.stringify(submission));
+          }
+        }
+      }
+    } else {
+      // Use in-memory storage for local development
+      const index = memoryStore.findIndex(sub => sub.id === id);
+      if (index === -1) {
+        return NextResponse.json(
+          { error: 'Submission not found' },
+          { status: 404 }
+        );
+      }
+      memoryStore.splice(index, 1);
+    }
+
+    return NextResponse.json({ message: 'Submission deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting submission:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete submission' },
+      { status: 500 }
+    );
+  }
+}
