@@ -133,7 +133,7 @@ export function ResidencyForm() {
         {/* Value Engine Triad */}
         <div className="space-y-6">
           <label className="block text-xl font-semibold text-gray-200 text-center">
-            Looking back at your most productive or meaningful moment today, what made it possible?
+            Looking back at your most productive or meaningful moment this week, what made it possible?
           </label>
           
           {/* Explanations */}
